@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Project Glass Canon</title>
+  <title>Project Glass Cannon</title>
   <meta name="description" content="AI's offensive capabilities don't translate to its defensive capabilities." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fb923c'/><stop offset='1' stop-color='%239333ea'/></linearGradient></defs><polygon points='50,5 95,50 50,95 5,50' fill='url(%23g)'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -101,6 +101,14 @@
            :style="{ width: (progress * 100) + '%' }"></div>
     </div>
 
+    <!-- Repo link -->
+    <a href="https://github.com/memetb/glass-cannon" target="_blank" rel="noopener noreferrer"
+       class="glass fixed top-4 right-4 md:top-6 md:right-8 z-50 flex items-center gap-2 rounded-full px-4 py-2 font-mono text-xs uppercase tracking-[.25em] text-white/80 hover:text-white hover:shadow-[0_0_24px_rgba(255,122,24,.5)] transition"
+       aria-label="View source on GitHub">
+      <svg class="w-4 h-4" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      <span class="hidden sm:inline">GitHub</span>
+    </a>
+
     <!-- Dot nav -->
     <nav class="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col gap-4" aria-label="Sections">
       <a v-for="(s, i) in sections" :key="s.id" :href="'#' + s.id"
@@ -116,7 +124,7 @@
       <p class="font-mono text-xs uppercase tracking-[.5em] text-amber/80 mb-8">Project&nbsp;// 0x6C6173</p>
       <h1 class="max-w-6xl text-5xl sm:text-7xl md:text-8xl font-bold leading-[.95] tracking-tight"
           :style="{ transform: `translateY(${scrollY * 0.25}px)`, opacity: Math.max(0, 1 - scrollY / 700) }">
-        <span class="sheen">Project Glass Canon</span>
+        <span class="sheen">Project Glass Cannon</span>
         <span class="block mt-6 text-2xl sm:text-4xl md:text-5xl font-semibold text-white/90 leading-tight">
             AI's offensive capabilities don't translate to its defensive capabilities
         </span>
@@ -160,7 +168,7 @@
 
     <footer id="end" data-section class="min-h-[60svh] flex flex-col items-center justify-center px-4 text-center gap-6">
       <p class="font-serif italic text-4xl sm:text-6xl sheen">Cheap to break. Expensive to prove.</p>
-      <p class="font-mono text-xs uppercase tracking-[.4em] text-white/40">© {{ year }} Project Glass Canon</p>
+      <p class="font-mono text-xs uppercase tracking-[.4em] text-white/40">© {{ year }} Project Glass Cannon</p>
     </footer>
   </div>
 
@@ -176,7 +184,7 @@
     createApp({
       setup() {
         const cards = [
-          { id: "card-1", kicker: "Thesis",       title: "Lorem ipsum asymmetry",       body: [lorem[0], lorem[1]], tags: ["offense", "verification"] },
+          { id: "card-1", kicker: "Thesis",       title: "Lorem ipsum asymmetry",       body: ["The asymmetry of offense and defense, generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different."], tags: ["offense", "verification"] },
           { id: "card-2", kicker: "Observation",  title: "Dolor sit exploitum",         body: [lorem[1]],           tags: ["search", "witness"] },
           { id: "card-3", kicker: "Mechanism",    title: "Consectetur adversarium",     body: [lorem[2], lorem[0]], tags: ["NP", "certificates"] },
           { id: "card-4", kicker: "Counterpoint", title: "Sed do defensio tempor",      body: [lorem[0]],           tags: ["coNP", "universal"] },
