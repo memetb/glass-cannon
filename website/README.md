@@ -1,4 +1,4 @@
-# Glass Canon lander
+# Glass Cannon lander
 
 Single static `index.html`: Vue 3 (global build) + Tailwind v4 browser build, both from CDN. No build step.
 
@@ -12,4 +12,4 @@ npx serve website
 - Build command: *(empty)*
 - Build output directory: `website`
 
-Or: `npx wrangler pages deploy website --project-name glass-canon`
+Or: `npx wrangler pages deploy website --project-name glass-cannon`
