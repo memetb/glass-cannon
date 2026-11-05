@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Glass Canon</title>
+  <meta name="description" content="AI's offensive capabilities don't translate to it's defensive capabilities." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fb923c'/><stop offset='1' stop-color='%239333ea'/></linearGradient></defs><polygon points='50,5 95,50 50,95 5,50' fill='url(%23g)'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+
+  <style type="text/tailwindcss">
+    @theme {
+      --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+      --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+      --font-mono: "JetBrains Mono", ui-monospace, monospace;
+      --color-ember: #ff7a18;
+      --color-amber: #ffb347;
+      --color-violet: #8b2cf5;
+      --color-ink: #0b0614;
+    }
+  </style>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #0b0614; }
+    [v-cloak] { display: none; }
+
+    /* Drifting gradient blobs */
+    @keyframes drift {
+      0%   { transform: translate(0,0) scale(1) rotate(0deg); }
+      33%  { transform: translate(8vw,-6vh) scale(1.15) rotate(40deg); }
+      66%  { transform: translate(-6vw,8vh) scale(0.9) rotate(-30deg); }
+      100% { transform: translate(0,0) scale(1) rotate(0deg); }
+    }
+    .blob { position: absolute; border-radius: 9999px; filter: blur(90px); opacity: .55; animation: drift 28s ease-in-out infinite; will-change: transform; }
+
+    /* Animated gradient text */
+    @keyframes sheen { to { background-position: 200% center; } }
+    .sheen {
+      background: linear-gradient(100deg, #ffb347 0%, #ff7a18 25%, #c026d3 50%, #8b2cf5 75%, #ffb347 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: sheen 8s linear infinite;
+    }
+
+    /* Grain overlay */
+    .grain::after {
+      content: ""; position: fixed; inset: -50%; pointer-events: none; z-index: 60; opacity: .07;
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    }
+
+    /* Glass card w/ gradient hairline border */
+    .glass {
+      background: linear-gradient(140deg, rgba(255,255,255,.09), rgba(255,255,255,.02));
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      position: relative;
+    }
+    .glass::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+      background: linear-gradient(140deg, rgba(255,179,71,.8), rgba(139,44,245,.15) 45%, rgba(192,38,211,.7));
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor; mask-composite: exclude;
+    }
+
+    /* Reveal transitions driven by .is-in */
+    .reveal { opacity: 0; transform: translateY(80px) rotateX(18deg) scale(.94); filter: blur(12px);
+      transition: opacity 1s cubic-bezier(.2,.8,.2,1), transform 1.2s cubic-bezier(.2,.8,.2,1), filter 1s ease; }
+    .reveal.is-in { opacity: 1; transform: none; filter: none; }
+
+    @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+    .bob { animation: bob 2.4s ease-in-out infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .blob, .sheen, .bob { animation: none; }
+      .reveal { transition: none; opacity: 1; transform: none; filter: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+
+<body class="grain font-sans text-white antialiased selection:bg-violet/60 overflow-x-hidden">
+  <div id="app" v-cloak>
+    <!-- Background -->
+    <div class="fixed inset-0 -z-10 overflow-hidden" aria-hidden="true">
+      <div class="blob w-[55vw] h-[55vw] -top-[15vw] -left-[10vw] bg-ember"></div>
+      <div class="blob w-[60vw] h-[60vw] top-[30vh] -right-[20vw] bg-violet" style="animation-delay:-9s"></div>
+      <div class="blob w-[40vw] h-[40vw] bottom-[-10vw] left-[20vw] bg-fuchsia-600" style="animation-delay:-17s"></div>
+      <div class="absolute inset-0"
+           :style="{ background: `radial-gradient(600px circle at ${mx}px ${my}px, rgba(255,140,40,.12), transparent 60%)` }"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,.04)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,.04)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_at_center,#000_30%,transparent_75%)]"></div>
+    </div>
+
+    <!-- Scroll progress -->
+    <div class="fixed top-0 left-0 right-0 h-[3px] z-50 bg-white/5">
+      <div class="h-full bg-gradient-to-r from-amber via-ember to-violet shadow-[0_0_12px_#ff7a18]"
+           :style="{ width: (progress * 100) + '%' }"></div>
+    </div>
+
+    <!-- Dot nav -->
+    <nav class="fixed right-4 md:right-8 top-1/2 -translate-y-1/2 z-40 hidden sm:flex flex-col gap-4" aria-label="Sections">
+      <a v-for="(s, i) in sections" :key="s.id" :href="'#' + s.id"
+         class="group flex items-center justify-end gap-3" :aria-label="s.label">
+        <span class="font-mono text-[10px] uppercase tracking-[.3em] text-white/0 group-hover:text-white/70 transition">{{ s.label }}</span>
+        <span class="block rounded-full transition-all duration-500"
+              :class="active === i ? 'w-3 h-3 bg-gradient-to-br from-amber to-violet shadow-[0_0_14px_#ff7a18]' : 'w-2 h-2 bg-white/30 group-hover:bg-white/60'"></span>
+      </a>
+    </nav>
+
+    <!-- Hero -->
+    <header id="hero" data-section class="relative min-h-[100svh] flex flex-col items-center justify-center px-4 text-center">
+      <p class="font-mono text-xs uppercase tracking-[.5em] text-amber/80 mb-8">Project&nbsp;// 0x6C6173</p>
+      <h1 class="max-w-6xl text-5xl sm:text-7xl md:text-8xl font-bold leading-[.95] tracking-tight"
+          :style="{ transform: `translateY(${scrollY * 0.25}px)`, opacity: Math.max(0, 1 - scrollY / 700) }">
+        <span class="sheen">Project Glass Canon</span>
+        <span class="block mt-6 text-2xl sm:text-4xl md:text-5xl font-semibold text-white/90 leading-tight">
+          AI's offensive capabilities don't translate to it's defensive capabilities
+        </span>
+      </h1>
+      <p class="mt-10 font-serif italic text-xl sm:text-3xl text-white/70"
+         :style="{ opacity: Math.max(0, 1 - scrollY / 500) }">
+        …or, how we all know in our heart of hearts that
+        <span class="not-italic font-mono text-lg sm:text-2xl px-2 py-0.5 rounded bg-gradient-to-r from-ember/30 to-violet/30 ring-1 ring-white/20">P&nbsp;≠&nbsp;NP</span>
+      </p>
+      <a href="#card-1" class="absolute bottom-10 flex flex-col items-center gap-2 text-white/50 hover:text-white transition">
+        <span class="font-mono text-[10px] uppercase tracking-[.4em]">Descend</span>
+        <svg class="bob w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+    </header>
+
+    <!-- Narrative cards -->
+    <main class="relative">
+      <section v-for="(c, i) in cards" :key="c.id" :id="c.id" data-section
+               class="min-h-[100svh] flex items-center px-4 sm:px-8 [perspective:1400px]"
+               :class="i % 2 ? 'justify-end' : 'justify-start'">
+        <article :ref="el => cardEls[i] = el"
+                 class="reveal glass w-full max-w-2xl rounded-[2rem] p-8 sm:p-12 shadow-[0_30px_120px_-20px_rgba(139,44,245,.45)] md:mx-[6vw]"
+                 :class="{ 'is-in': revealed[i] }"
+                 @mousemove="tilt($event, i)" @mouseleave="tilts[i] = ''"
+                 :style="{ transform: revealed[i] ? tilts[i] : undefined }">
+          <div class="flex items-baseline justify-between mb-8">
+            <span class="font-mono text-xs tracking-[.35em] uppercase text-amber/90">{{ c.kicker }}</span>
+            <span class="font-serif italic text-7xl sm:text-8xl leading-none text-transparent bg-clip-text bg-gradient-to-b from-white/40 to-white/0 select-none">{{ String(i + 1).padStart(2, '0') }}</span>
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-bold leading-tight mb-6">
+            <span class="bg-gradient-to-r from-amber via-ember to-fuchsia-500 bg-clip-text text-transparent">{{ c.title }}</span>
+          </h2>
+          <p v-for="(p, j) in c.body" :key="j" class="text-white/75 text-base sm:text-lg leading-relaxed mb-4 last:mb-0">{{ p }}</p>
+          <div class="mt-8 flex flex-wrap gap-2">
+            <span v-for="t in c.tags" :key="t"
+                  class="font-mono text-[11px] uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 ring-1 ring-white/15 text-white/70">{{ t }}</span>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer id="end" data-section class="min-h-[60svh] flex flex-col items-center justify-center px-4 text-center gap-6">
+      <p class="font-serif italic text-4xl sm:text-6xl sheen">Cheap to break. Expensive to prove.</p>
+      <p class="font-mono text-xs uppercase tracking-[.4em] text-white/40">© {{ year }} Project Glass Canon</p>
+    </footer>
+  </div>
+
+  <script>
+    const { createApp, ref, reactive, onMounted, onBeforeUnmount } = Vue;
+
+    const lorem = [
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.",
+      "Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent.",
+      "Curabitur sodales ligula in libero. Sed dignissim lacinia nunc. Curabitur tortor. Pellentesque nibh. Aenean quam. In scelerisque sem at dolor. Maecenas mattis.",
+    ];
+
+    createApp({
+      setup() {
+        const cards = [
+          { id: "card-1", kicker: "Thesis",       title: "Lorem ipsum asymmetry",       body: [lorem[0], lorem[1]], tags: ["offense", "verification"] },
+          { id: "card-2", kicker: "Observation",  title: "Dolor sit exploitum",         body: [lorem[1]],           tags: ["search", "witness"] },
+          { id: "card-3", kicker: "Mechanism",    title: "Consectetur adversarium",     body: [lorem[2], lorem[0]], tags: ["NP", "certificates"] },
+          { id: "card-4", kicker: "Counterpoint", title: "Sed do defensio tempor",      body: [lorem[0]],           tags: ["coNP", "universal"] },
+          { id: "card-5", kicker: "Evidence",     title: "Ut enim ad minima benchmark", body: [lorem[1], lorem[2]], tags: ["evals", "red-team"] },
+          { id: "card-6", kicker: "Conclusion",   title: "Quis nostrum vitrum",         body: [lorem[2]],           tags: ["glass", "cannon"] },
+        ];
+        const sections = [{ id: "hero", label: "Intro" }, ...cards.map(c => ({ id: c.id, label: c.kicker })), { id: "end", label: "End" }];
+
+        const cardEls = [];
+        const revealed = reactive(cards.map(() => false));
+        const tilts = reactive(cards.map(() => ""));
+        const scrollY = ref(0), progress = ref(0), active = ref(0), mx = ref(-999), my = ref(-999);
+        const year = new Date().getFullYear();
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        let raf = 0, scrollY_ = 0;
+        const onScroll = () => {
+          if (raf) return;
+          raf = requestAnimationFrame(() => {
+            raf = 0;
+            scrollY.value = scrollY_ = window.scrollY;
+            const max = document.documentElement.scrollHeight - innerHeight;
+            progress.value = max > 0 ? scrollY_ / max : 0;
+          });
+        };
+        const onMove = e => { mx.value = e.clientX; my.value = e.clientY; };
+
+        const tilt = (e, i) => {
+          if (reduced || !matchMedia("(hover: hover)").matches) return;
+          const r = e.currentTarget.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+          tilts[i] = `rotateY(${x * 8}deg) rotateX(${-y * 8}deg)`;
+        };
+
+        let revealObs, sectionObs;
+        onMounted(() => {
+          revealObs = new IntersectionObserver(entries => {
+            for (const en of entries) {
+              const i = cardEls.indexOf(en.target);
+              if (i >= 0 && en.isIntersecting) { revealed[i] = true; revealObs.unobserve(en.target); }
+            }
+          }, { threshold: 0.25, rootMargin: "0px 0px -10% 0px" });
+          cardEls.forEach(el => el && revealObs.observe(el));
+
+          const secEls = [...document.querySelectorAll("[data-section]")];
+          sectionObs = new IntersectionObserver(entries => {
+            for (const en of entries) if (en.isIntersecting) active.value = secEls.indexOf(en.target);
+          }, { rootMargin: "-50% 0px -50% 0px" });
+          secEls.forEach(el => sectionObs.observe(el));
+
+          addEventListener("scroll", onScroll, { passive: true });
+          addEventListener("pointermove", onMove, { passive: true });
+          onScroll();
+        });
+        onBeforeUnmount(() => {
+          revealObs?.disconnect(); sectionObs?.disconnect();
+          removeEventListener("scroll", onScroll); removeEventListener("pointermove", onMove);
+        });
+
+        return { cards, sections, cardEls, revealed, tilts, tilt, scrollY, progress, active, mx, my, year };
+      },
+    }).mount("#app");
+  </script>
+</body>
+</html>
