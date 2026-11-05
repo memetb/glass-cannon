@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23fb923c'/><stop offset='1' stop-color='%239333ea'/></linearGradient></defs><polygon points='50,5 95,50 50,95 5,50' fill='url(%23g)'/></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Instrument+Serif:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;1,300&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
   <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
 
@@ -16,6 +16,7 @@
     @theme {
       --font-sans: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
       --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+      --font-quote: "Cormorant Garamond", "Instrument Serif", ui-serif, Georgia, serif;
       --font-mono: "JetBrains Mono", ui-monospace, monospace;
       --color-ember: #ff7a18;
       --color-amber: #ffb347;
@@ -163,12 +164,13 @@
                   class="font-mono text-[11px] uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 ring-1 ring-white/15 text-white/70">{{ t }}</span>
           </div>
         </article>
-        <p v-if="c.aside"
-           class="reveal flex-1 max-w-xl text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight md:mx-[4vw] sm:pr-10"
+        <blockquote v-if="c.aside"
+           class="reveal relative flex-1 max-w-xl font-quote font-light text-white text-4xl sm:text-5xl md:text-4xl lg:text-5xl 2xl:text-6xl leading-[1.12] tracking-[-0.01em] md:mx-[4vw] sm:pr-10"
            :class="[{ 'is-in': revealed[i] }, i % 2 ? 'md:order-first md:text-left' : 'md:text-right']"
            style="transition-delay:.3s">
-          <span class="sheen">{{ c.aside }}</span>
-        </p>
+          <span aria-hidden="true" class="block font-quote text-[1.6em] leading-[.5] text-white/30 mb-2">&ldquo;</span>
+          {{ c.aside }}
+        </blockquote>
       </section>
     </main>
 
