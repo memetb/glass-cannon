@@ -143,8 +143,8 @@
     <!-- Narrative cards -->
     <main class="relative">
       <section v-for="(c, i) in cards" :key="c.id" :id="c.id" data-section
-               class="min-h-[100svh] flex items-center px-4 sm:px-8 [perspective:1400px]"
-               :class="i % 2 ? 'justify-end' : 'justify-start'">
+               class="min-h-[100svh] flex flex-col md:flex-row items-center gap-12 md:gap-8 px-4 sm:px-8 py-24 md:py-0 [perspective:1400px]"
+               :class="c.aside ? 'justify-center md:justify-between' : (i % 2 ? 'justify-end' : 'justify-start')">
         <article :ref="el => cardEls[i] = el"
                  class="reveal glass w-full max-w-2xl rounded-[2rem] p-8 sm:p-12 shadow-[0_30px_120px_-20px_rgba(139,44,245,.45)] md:mx-[6vw]"
                  :class="{ 'is-in': revealed[i] }"
@@ -163,6 +163,12 @@
                   class="font-mono text-[11px] uppercase tracking-widest px-3 py-1 rounded-full bg-white/5 ring-1 ring-white/15 text-white/70">{{ t }}</span>
           </div>
         </article>
+        <p v-if="c.aside"
+           class="reveal flex-1 max-w-xl text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight md:mx-[4vw] sm:pr-10"
+           :class="[{ 'is-in': revealed[i] }, i % 2 ? 'md:order-first md:text-left' : 'md:text-right']"
+           style="transition-delay:.3s">
+          <span class="sheen">{{ c.aside }}</span>
+        </p>
       </section>
     </main>
 
@@ -184,7 +190,7 @@
     createApp({
       setup() {
         const cards = [
-          { id: "card-1", kicker: "Thesis",       title: "Lorem ipsum asymmetry",       body: ["The asymmetry of offense and defense, generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different."], tags: ["offense", "verification"] },
+          { id: "card-1", kicker: "Thesis",       title: "The asymmetry of offense and defense",       aside: "AI's impressive offensive capabilities do not translate to defensive ones", body: ["The asymmetry of offense and defense, generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different."], tags: ["offense", "verification"] },
           { id: "card-2", kicker: "Observation",  title: "Dolor sit exploitum",         body: [lorem[1]],           tags: ["search", "witness"] },
           { id: "card-3", kicker: "Mechanism",    title: "Consectetur adversarium",     body: [lorem[2], lorem[0]], tags: ["NP", "certificates"] },
           { id: "card-4", kicker: "Counterpoint", title: "Sed do defensio tempor",      body: [lorem[0]],           tags: ["coNP", "universal"] },
