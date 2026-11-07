@@ -22,7 +22,7 @@ tags: offense, verification
 
 > AI's impressive offensive capabilities do not translate to defensive ones
 
-The asymmetry of offense and defense, generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different.
+generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different.
 
 ## Dolor sit exploitum
 kicker: Observation
