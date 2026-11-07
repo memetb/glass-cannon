@@ -4,7 +4,7 @@
 Each scenario: a search tree grows; a leaf is verified and REJECTED; the
 rejection propagates up the path to an ancestor (never the root); the
 ancestor's subtree is pruned and a new subtree regenerates beneath it; a leaf
-in the new subtree is re-verified and ACCEPTED; the tree clears and the next
+in the new subtree is re-verified and COMMITTED (green ball); the tree clears and the next
 scenario starts.
 
 CSS-only so it animates inside <img>. Usage: python3 tools/tree-regrow.py [seed]
@@ -18,7 +18,7 @@ DEPTH = 4
 TOP, BOTTOM, LEFT, RIGHT = 140, 760, 110, 1090
 LEVEL_Y = [TOP + d * (BOTTOM - TOP) / DEPTH for d in range(DEPTH + 1)]
 
-RED, GOLD, ORANGE = "#ff3b6b", "#ffd166", "#ffb347"
+RED, GREEN, ORANGE = "#ff3b6b", "#34d399", "#ffb347"
 
 # timeline (seconds, local to a scenario)
 GROW0, STEP = 0.1, 0.2            # level stagger while growing
@@ -269,16 +269,16 @@ for k, ((levels, a, ai, sub, path1, new_rows, path2_new, anc), t) in enumerate(z
                 (t["s2"] + (d - 1) * SEL_STEP, f"stroke:{ORANGE};stroke-dashoffset:0;opacity:.35"),
                 (t["s2"] + (d - 1) * SEL_STEP + .24, f"stroke:{ORANGE};stroke-dashoffset:0;opacity:1"),
                 (t["v2"] + (d - 1) * .05, f"stroke:{ORANGE};stroke-dashoffset:0;opacity:1"),
-                (t["v2"] + (d - 1) * .05 + .15, f"stroke:{GOLD};stroke-dashoffset:0;opacity:1"),
-            ] + [(s, f"stroke:{GOLD};" + v) for s, v in undraw(end_coll(d) - .1)]
+                (t["v2"] + (d - 1) * .05 + .15, f"stroke:{GREEN};stroke-dashoffset:0;opacity:1"),
+            ] + [(s, f"stroke:{GREEN};" + v) for s, v in undraw(end_coll(d) - .1)]
         sel.append(seg(kf(k, st), p, c))
     for d in range(a + 1, DEPTH + 1):
         p = pos(a, ai) if d == a + 1 else posn(d - 1, path2_new[d - 1])
         c = posn(d, path2_new[d])
         d0 = t["s2"] + (d - 1) * SEL_STEP
         st = [(0, f"stroke-dashoffset:1;opacity:1;stroke:{ORANGE}")] + draw(d0) + [
-            (t["v2"] + (d - 1) * .05, f"stroke:{ORANGE}"), (t["v2"] + (d - 1) * .05 + .15, f"stroke:{GOLD};stroke-dashoffset:0;opacity:1")
-        ] + [(s, f"stroke:{GOLD};" + v) for s, v in undraw(end_coll(d) - .1)]
+            (t["v2"] + (d - 1) * .05, f"stroke:{ORANGE}"), (t["v2"] + (d - 1) * .05 + .15, f"stroke:{GREEN};stroke-dashoffset:0;opacity:1")
+        ] + [(s, f"stroke:{GREEN};" + v) for s, v in undraw(end_coll(d) - .1)]
         sel.append(seg(kf(k, st), p, c))
     body_k.insert(3, "".join(sel))
 
@@ -318,25 +318,25 @@ for k, ((levels, a, ai, sub, path1, new_rows, path2_new, anc), t) in enumerate(z
     lab_anc_r = kf(k, [(0, "opacity:0"), (an + .1, "opacity:0"), (an + .3, "opacity:1"), (t["regrow"] - .1, "opacity:1"), (t["regrow"] + .05, "opacity:0")])
     lab_anc_g = kf(k, [(0, "opacity:0"), (t["regrow"], "opacity:0"), (t["regrow"] + .15, "opacity:1"), (t["s2"], "opacity:1"), (t["s2"] + .2, "opacity:0")])
 
-    # leaf 2: VERIFY → ACCEPT
+    # leaf 2: VERIFY → COMMIT (leaf swells into a green ball)
     mx, my = posn(DEPTH, path2_new[DEPTH])
     l2, v2 = t["l2"], t["v2"]
     leaf2 = kf(k, [(0, "transform:scale(0);fill:#fff")] + [(s, v + ";fill:#fff") for s, v in pop(l2)] + [
-        (v2, "transform:scale(1);fill:#fff"), (v2 + .12, f"transform:scale(1.5);fill:{GOLD}"),
-        (v2 + .24, f"transform:scale(.9);fill:{GOLD}"), (v2 + .34, f"transform:scale(1);fill:{GOLD}")] +
-        [(s, v + f";fill:{GOLD}") for s, v in collapse(t["end"])])
-    halo2 = kf(k, [(0, "opacity:0;transform:scale(.3)"), (l2, "opacity:0;transform:scale(.3)"),
+        (v2, "transform:scale(1);fill:#fff"), (v2 + .14, f"transform:scale(2.6);fill:{GREEN}"),
+        (v2 + .28, f"transform:scale(1.6);fill:{GREEN}"), (v2 + .4, f"transform:scale(2.05);fill:{GREEN}"),
+        (v2 + .5, f"transform:scale(1.9);fill:{GREEN}")] +
+        [(t["end"], f"transform:scale(1.9);fill:{GREEN}"), (t["end"] + .08, f"transform:scale(2.3);fill:{GREEN}"),
+         (t["end"] + .26, f"transform:scale(0);fill:{GREEN}")])
+    halo2a = kf(k, [(0, "opacity:0;transform:scale(.3)"), (l2, "opacity:0;transform:scale(.3)"),
                    (l2 + .3, "opacity:.9;transform:scale(1.1)"), (l2 + .45, "opacity:.8;transform:scale(1)"),
-                   (v2, "opacity:.8;transform:scale(1)"), (v2 + .2, "opacity:1;transform:scale(1.6)"),
+                   (v2, "opacity:.8;transform:scale(1)"), (v2 + .1, "opacity:0;transform:scale(1.2)")])
+    halo2 = kf(k, [(0, "opacity:0;transform:scale(1)"), (v2, "opacity:0;transform:scale(1)"), (v2 + .2, "opacity:1;transform:scale(1.6)"),
                    (v2 + .5, "opacity:.85;transform:scale(1.2)"), (t["end"], "opacity:.85;transform:scale(1.2)"),
                    (t["end"] + .25, "opacity:0;transform:scale(.2)")])
-    chk = kf(k, [(0, "stroke-dashoffset:1;opacity:1"), (v2 + .05, "stroke-dashoffset:1;opacity:1"),
-                 (v2 + .3, "stroke-dashoffset:0;opacity:1"), (t["end"], "stroke-dashoffset:0;opacity:1"),
-                 (t["end"] + .2, "stroke-dashoffset:0;opacity:0")])
     v2l = kf(k, [(0, "opacity:0;transform:translateY(12px)"), (l2 + .1, "opacity:0;transform:translateY(12px)"),
                  (l2 + .35, "opacity:1;transform:translateY(-4px)"), (l2 + .5, "opacity:1;transform:translateY(0)"),
                  (v2 - .05, "opacity:1;transform:translateY(0)"), (v2 + .1, "opacity:0;transform:translateY(0)")])
-    acc_l = kf(k, [(0, "opacity:0;transform:scale(.4)"), (v2 + .05, "opacity:0;transform:scale(.4)"),
+    commit_l = kf(k, [(0, "opacity:0;transform:scale(.4)"), (v2 + .05, "opacity:0;transform:scale(.4)"),
                    (v2 + .25, "opacity:1;transform:scale(1.25)"), (v2 + .4, "opacity:1;transform:scale(1)"),
                    (t["end"], "opacity:1;transform:scale(1)"), (t["end"] + .2, "opacity:0;transform:scale(.6)")])
 
@@ -356,11 +356,11 @@ for k, ((levels, a, ai, sub, path1, new_rows, path2_new, anc), t) in enumerate(z
         f'<circle class="ring {ring}" cx="{axx:.1f}" cy="{axy:.1f}" r="24"/>'
         f'<text class="lab small reject {lab_anc_r}" x="{lab_x:.1f}" y="{axy + 6:.1f}" style="text-anchor:{lab_anchor}">REJECT ↑</text>'
         f'<text class="lab small regen {lab_anc_g}" x="{lab_x:.1f}" y="{axy + 6:.1f}" style="text-anchor:{lab_anchor}">REGENERATE</text>'
+        f'<circle class="halo {halo2a}" cx="{mx:.1f}" cy="{my:.1f}" r="70" fill="url(#glowA)"/>'
         f'<circle class="halo {halo2}" cx="{mx:.1f}" cy="{my:.1f}" r="70" fill="url(#glowG)"/>'
         f'<circle class="leaf {leaf2}" cx="{mx:.1f}" cy="{my:.1f}" r="12"/>'
-        f'<path class="chk {chk}" pathLength="1" d="M{mx-18:.1f},{my-50:.1f} l12,12 l24,-28"/>'
         f'<text class="lab {v2l}" x="{mx:.1f}" y="{my + 52:.1f}">VERIFY(x′)</text>'
-        f'<text class="lab accept {acc_l}" x="{mx:.1f}" y="{my + 52:.1f}">ACCEPT</text>'
+        f'<text class="lab commit {commit_l}" x="{mx:.1f}" y="{my + 52:.1f}">COMMIT</text>'
         f'<text class="hdr {att1}" x="1140" y="70" text-anchor="end" fill="#fff">ATTEMPT 1</text>'
         f'<text class="hdr {att2}" x="1140" y="70" text-anchor="end" fill="#fff">ATTEMPT 2</text>'
     )
@@ -375,10 +375,9 @@ style = f"""
 .ring{{fill:none;stroke:{RED};stroke-width:4;transform-box:fill-box;transform-origin:center;transform:scale(0);filter:url(#soft)}}
 .x path{{stroke:{RED};stroke-width:7;stroke-linecap:round;fill:none;filter:url(#soft)}}
 .x{{transform:scale(0)}}
-.chk{{fill:none;stroke:{GOLD};stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;filter:url(#soft)}}
 .lab{{font:600 22px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:4px;text-anchor:middle;fill:#fff;opacity:0;transform-box:fill-box;transform-origin:center}}
 .small{{font-size:18px;letter-spacing:3px}}
-.reject{{fill:{RED}}} .regen{{fill:{ORANGE}}} .accept{{fill:{GOLD}}}
+.reject{{fill:{RED}}} .regen{{fill:{ORANGE}}} .commit{{fill:{GREEN}}}
 .hdr{{font:20px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:6px;opacity:0}}
 {''.join(css)}
 @media (prefers-reduced-motion: reduce){{
@@ -395,7 +394,7 @@ svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{
 <linearGradient id="edge" x1="0" y1="0" x2="0" y2="{H}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#8b2cf5"/></linearGradient>
 <radialGradient id="glowA"><stop offset="0" stop-color="#ff7a18" stop-opacity=".9"/><stop offset="1" stop-color="#ff7a18" stop-opacity="0"/></radialGradient>
 <radialGradient id="glowR"><stop offset="0" stop-color="{RED}" stop-opacity=".95"/><stop offset="1" stop-color="{RED}" stop-opacity="0"/></radialGradient>
-<radialGradient id="glowG"><stop offset="0" stop-color="{GOLD}" stop-opacity=".9"/><stop offset="1" stop-color="{GOLD}" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowG"><stop offset="0" stop-color="{GREEN}" stop-opacity=".9"/><stop offset="1" stop-color="{GREEN}" stop-opacity="0"/></radialGradient>
 <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
 <style>{style}</style>
