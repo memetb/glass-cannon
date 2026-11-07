@@ -2,10 +2,12 @@
   "name": "glass-cannon-site",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "node build.mjs && tailwindcss -i src/styles.css -o dist/styles.css --minify",
-    "preview": "python3 -m http.server 8080 -d dist"
+    "preview": "sh -c 'python3 -m http.server -d dist \"${1:-${PORT:-8080}}\"' --"
   },
   "devDependencies": {
     "@tailwindcss/cli": "4.3.3",
