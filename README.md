@@ -41,6 +41,7 @@ Meta lines must come directly after the heading. The aside — a `>` pull-quote 
 npm install
 npm run build     # → dist/
 npm run preview   # http://localhost:8080
+npm run preview -- 3000   # or: PORT=3000 npm run preview
 ```
 
 ### Cloudflare Pages
