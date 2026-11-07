@@ -30,7 +30,7 @@ generation and verification: assuming that code generation is a walk over a stat
 kicker: Observation
 tags: search, witness
 
-![A search tree grows, one leaf is selected and cancelled, and a new tree grows](images/tree-cycle.svg "Generation walks the tree; verification touches one leaf.")
+![A search tree with one highlighted leaf being verified](images/state-space.svg "Generation walks the tree; verification touches one leaf.")
 
 Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent.
 
