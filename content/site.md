@@ -30,7 +30,7 @@ generation and verification: assuming that code generation is a walk over a stat
 kicker: Observation
 tags: search, witness
 
-![A search tree grows, one leaf is selected and cancelled, and a new tree grows](images/tree-cycle.svg "Generation walks the tree; verification touches one leaf.")
+![A search tree grows, one leaf is selected and rejected, and a new tree grows](images/tree-cycle.svg "Generation walks the tree; verification touches one leaf.")
 
 Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent.
 
@@ -49,6 +49,8 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praes
 ## Sed do defensio tempor
 kicker: Counterpoint
 tags: coNP, universal
+
+![A leaf is rejected, the rejection propagates to an ancestor, the subtree is regenerated and a new leaf is verified](images/tree-regrow.svg "Reject, prune, regenerate, re-verify.")
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet.
 

@@ -2,7 +2,7 @@
 """Generate content/images/tree-cycle.svg — a looping, CSS-only animated SVG.
 
 Each cycle: a random search tree grows (bouncy pop-in, level by level), one
-leaf is selected (path lights up), the leaf is cancelled (red ✕, shake), the
+leaf is selected (path lights up), the leaf is rejected (red ✕, shake), the
 tree collapses, and a different tree grows in its place.
 
 CSS-only so it animates inside <img>. Usage: python3 tools/tree-anim.py [seed]
@@ -11,19 +11,20 @@ import random, sys
 
 SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 11
 TREES = 4            # distinct trees per loop
-WIN = 5.6            # seconds per tree
-T = TREES * WIN      # loop length
+WIN = None           # seconds per tree (derived from the timeline below)
 W, H = 1200, 900
 DEPTH = 4            # levels below root
 TOP, BOTTOM, LEFT, RIGHT = 140, 760, 110, 1090
 
 # timeline (seconds, local to a tree's window)
-GROW0, GROW_STEP = 0.15, 0.38
-SELECT0, SELECT_STEP = 2.45, 0.14
+GROW0, GROW_STEP = 0.1, 0.2
+SELECT0, SELECT_STEP = GROW0 + DEPTH * GROW_STEP + 0.5, 0.14
 LEAF_ON = SELECT0 + SELECT_STEP * DEPTH + 0.05
-CANCEL = LEAF_ON + 0.75
-COLLAPSE0, COLLAPSE_STEP = CANCEL + 0.75, 0.09
+REJECT = LEAF_ON + 0.75
+COLLAPSE0, COLLAPSE_STEP = REJECT + 0.75, 0.09
 GONE = COLLAPSE0 + COLLAPSE_STEP * DEPTH + 0.35
+WIN = GONE + 0.25
+T = TREES * WIN      # loop length
 
 BOUNCE = "cubic-bezier(.34,1.56,.64,1)"
 
@@ -77,16 +78,16 @@ for k in range(TREES):
         # node pop-in / collapse
         css.append(
             f"@keyframes n{k}{d}{{0%,{pct(k,t0)}{{transform:scale(0)}}"
-            f"{pct(k,t0+.16)}{{transform:scale(1.4)}}{pct(k,t0+.3)}{{transform:scale(.82)}}"
-            f"{pct(k,t0+.42)}{{transform:scale(1.1)}}{pct(k,t0+.54)},{pct(k,c0)}{{transform:scale(1)}}"
+            f"{pct(k,t0+.12)}{{transform:scale(1.4)}}{pct(k,t0+.22)}{{transform:scale(.82)}}"
+            f"{pct(k,t0+.31)}{{transform:scale(1.1)}}{pct(k,t0+.4)},{pct(k,c0)}{{transform:scale(1)}}"
             f"{pct(k,c0+.1)}{{transform:scale(1.25)}}{pct(k,c0+.32)},100%{{transform:scale(0)}}}}"
             f".n{k}{d}{{animation:n{k}{d} {T}s linear infinite}}"
         )
         if d:
-            e0 = t0 - 0.28
+            e0 = t0 - 0.2
             css.append(
                 f"@keyframes e{k}{d}{{0%,{pct(k,e0)}{{stroke-dashoffset:1;opacity:1}}"
-                f"{pct(k,e0+.32)}{{stroke-dashoffset:0;animation-timing-function:ease-in}}"
+                f"{pct(k,e0+.24)}{{stroke-dashoffset:0}}"
                 f"{pct(k,c0-.05)}{{stroke-dashoffset:0;opacity:1}}{pct(k,c0+.25)},100%{{stroke-dashoffset:1;opacity:0}}}}"
                 f".e{k}{d}{{animation:e{k}{d} {T}s linear infinite}}"
             )
@@ -118,15 +119,15 @@ for k in range(TREES):
     css.append(
         f"@keyframes s{k}{{0%,{pct(k,SELECT0)}{{stroke-dashoffset:1;opacity:1}}"
         f"{pct(k,SELECT0+SELECT_STEP*DEPTH+.1)}{{stroke-dashoffset:0}}"
-        f"{pct(k,CANCEL)}{{stroke:#ffb347;stroke-dashoffset:0;opacity:1}}{pct(k,CANCEL+.15)}{{stroke:#ff3b6b}}"
+        f"{pct(k,REJECT)}{{stroke:#ffb347;stroke-dashoffset:0;opacity:1}}{pct(k,REJECT+.15)}{{stroke:#ff3b6b}}"
         f"{pct(k,COLLAPSE0)}{{stroke:#ff3b6b;stroke-dashoffset:0;opacity:1}}{pct(k,COLLAPSE0+.3)},100%{{stroke:#ff3b6b;stroke-dashoffset:1;opacity:0}}}}"
         f".s{k}{{animation:s{k} {T}s linear infinite}}"
     )
     g.append(f'<path class="sel s{k}" pathLength="1" d="{dpath}"/>')
 
-    # leaf marker: pop in, wobble, turn red on cancel, shake, vanish
+    # leaf marker: pop in, wobble, turn red on reject, shake, vanish
     lx, ly = pts[-1]["x"], pts[-1]["y"]
-    a, c = LEAF_ON, CANCEL
+    a, c = LEAF_ON, REJECT
     css.append(
         f"@keyframes l{k}{{0%,{pct(k,a)}{{transform:scale(0);fill:#fff}}"
         f"{pct(k,a+.18)}{{transform:scale(1.6);fill:#fff}}{pct(k,a+.32)}{{transform:scale(.85)}}"
@@ -141,7 +142,7 @@ for k in range(TREES):
         f"{pct(k,c+.2)}{{opacity:1;transform:scale(1.5);fill:url(#glowR)}}{pct(k,COLLAPSE0)}{{opacity:.8;transform:scale(1);fill:url(#glowR)}}"
         f"{pct(k,COLLAPSE0+.25)},100%{{opacity:0;transform:scale(.2);fill:url(#glowR)}}}}"
         f".h{k}{{animation:h{k} {T}s linear infinite}}"
-        # ✕ strike + labels
+        # ✕ strike + labels (VERIFY → REJECT)
         f"@keyframes x{k}{{0%,{pct(k,c)}{{transform:scale(0) rotate(-90deg)}}{pct(k,c+.2)}{{transform:scale(1.5) rotate(10deg)}}"
         f"{pct(k,c+.34)}{{transform:scale(.85) rotate(-4deg)}}{pct(k,c+.46)},{pct(k,COLLAPSE0)}{{transform:scale(1) rotate(0)}}"
         f"{pct(k,COLLAPSE0+.25)},100%{{transform:scale(0) rotate(45deg)}}}}.x{k}{{animation:x{k} {T}s linear infinite}}"
@@ -158,7 +159,7 @@ for k in range(TREES):
         f'<circle class="leaf l{k}" cx="{lx:.1f}" cy="{ly:.1f}" r="12"/>'
         f'<g class="x x{k}" transform-origin="{lx:.1f} {ly:.1f}"><path d="M{lx-22:.1f},{ly-22:.1f} L{lx+22:.1f},{ly+22:.1f} M{lx+22:.1f},{ly-22:.1f} L{lx-22:.1f},{ly+22:.1f}"/></g>'
         f'<text class="lab v{k}" x="{lx:.1f}" y="{lab_y:.1f}">VERIFY(x)</text>'
-        f'<text class="lab cancel c{k}" x="{lx:.1f}" y="{lab_y:.1f}">CANCEL</text>'
+        f'<text class="lab reject c{k}" x="{lx:.1f}" y="{lab_y:.1f}">REJECT</text>'
     )
     body.append(f'<g class="tree t{k}">' + "".join(g) + "</g>")
 
@@ -179,19 +180,19 @@ style = f"""
 .x path{{stroke:#ff3b6b;stroke-width:7;stroke-linecap:round;fill:none;filter:url(#soft)}}
 .x{{transform:scale(0)}}
 .lab{{font:600 22px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:4px;text-anchor:middle;fill:#fff;opacity:0;transform-box:fill-box;transform-origin:center}}
-.cancel{{fill:#ff3b6b}}
+.reject{{fill:#ff3b6b}}
 .hdr{{font:20px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:6px}}
 {''.join(css)}
 @media (prefers-reduced-motion: reduce){{
   *{{animation:none!important}}
   .t1,.t2,.t3{{display:none}}
   .t0 .node,.t0 .leaf,.t0 .x{{transform:none}} .t0 .edge,.t0 .sel{{stroke-dashoffset:0}}
-  .t0 .halo,.t0 .cancel,.k0{{opacity:1}}
+  .t0 .halo,.t0 .reject,.k0{{opacity:1}}
 }}
 """
 
 svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">
-<title>A search tree grows, one leaf is selected and cancelled, and a new tree grows</title>
+<title>A search tree grows, one leaf is selected and rejected, and a new tree grows</title>
 <defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1a0b2e"/><stop offset="1" stop-color="#0b0614"/></linearGradient>
 <linearGradient id="edge" x1="0" y1="0" x2="0" y2="{H}" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#8b2cf5"/></linearGradient>
