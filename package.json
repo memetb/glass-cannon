@@ -1,0 +1,18 @@
+{
+  "name": "glass-cannon-site",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node build.mjs && tailwindcss -i src/styles.css -o dist/styles.css --minify",
+    "preview": "python3 -m http.server 8080 -d dist"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "katex": "0.18.11",
+    "marked": "18.1.1",
+    "marked-katex-extension": "5.1.13",
+    "tailwindcss": "4.3.3",
+    "vue": "3.5.13"
+  }
+}
