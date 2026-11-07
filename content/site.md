@@ -2,7 +2,7 @@
 title: Project Glass Cannon
 eyebrow: Project // 0x6C6173
 headline: AI's offensive capabilities don't translate to its defensive capabilities
-byline: …or, how we all know in our heart of hearts that $P \neq NP$
+byline: ...or, how we all know in our heart of hearts that $P \neq NP$
 description: AI's offensive capabilities don't translate to its defensive capabilities.
 footer: Cheap to break. Expensive to prove.
 repo: https://github.com/memetb/glass-cannon
@@ -20,9 +20,9 @@ Card format
 kicker: Thesis
 tags: offense, verification
 
-> AI's impressive offensive capabilities do not translate to defensive ones
+> AI's offensive capabilities do not translate to defensive ones
 
-generation and verification: assuming a simplified model that code generation is a walk over some sort of state space made up of AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different.
+generation and verification: assuming that code generation is a walk over a state space AST trees, and code verification is performed on a single element of this space, we can see that the two problems are vastly different.
 
 ## Dolor sit exploitum
 kicker: Observation
