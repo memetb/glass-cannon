@@ -1,15 +1,19 @@
 // Builds dist/ from content/site.md + src/index.html.
 // Tailwind runs afterwards (see package.json "build").
-import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync, cpSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { dirname, join, extname } from "node:path";
 import { Marked } from "marked";
 import markedKatex from "marked-katex-extension";
 
 const require = createRequire(import.meta.url);
 const pkgDir = name => dirname(require.resolve(`${name}/package.json`));
 const OUT = "dist";
+const CONTENT = "content";
 const CARD_META_KEYS = new Set(["kicker", "tags"]);
+// ![alt](src "optional caption") alone on a line
+const IMAGE_LINE = /^!\[([^\]]*)\]\(\s*<?([^\s>)]+)>?(?:\s+"([^"]*)")?\s*\)\s*$/;
+const isExternal = src => /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(src);
 
 const md = new Marked({ gfm: true }).use(markedKatex({ throwOnError: false }));
 
@@ -33,7 +37,7 @@ const slugify = s => s.toLowerCase().replace(/<[^>]+>/g, "").replace(/[^a-z0-9]+
 function parseCard(chunk, ids) {
   const lines = chunk.split(/\r?\n/);
   const title = lines.shift().replace(/^##\s+/, "").trim();
-  const card = { title: md.parseInline(title), kicker: "", tags: [], quote: null };
+  const card = { title: md.parseInline(title), kicker: "", tags: [], aside: null, quote: null, image: null };
 
   let i = 0;
   const skipBlank = () => { while (i < lines.length && !lines[i].trim()) i++; };
@@ -46,12 +50,22 @@ function parseCard(chunk, ids) {
     else card.kicker = v.trim();
   }
 
-  // optional leading blockquote → pull-quote
+  // optional aside: a leading blockquote (pull-quote) OR a leading image line
   skipBlank();
-  const q = [];
-  while (i < lines.length && /^\s*>/.test(lines[i])) q.push(lines[i++].replace(/^\s*>\s?/, ""));
-  const quote = q.join(" ").replace(/\s+/g, " ").trim();
-  if (quote) card.quote = md.parseInline(quote);
+  const img = i < lines.length && lines[i].trim().match(IMAGE_LINE);
+  if (img) {
+    i++;
+    const [, alt, src, caption] = img;
+    if (!isExternal(src) && !existsSync(join(CONTENT, src.replace(/^\//, ""))))
+      warn(`card "${title}": image not found: ${join(CONTENT, src)}`);
+    card.image = { src: src.replace(/^\//, ""), alt, caption: caption ? md.parseInline(caption) : "" };
+    card.aside = "image";
+  } else {
+    const q = [];
+    while (i < lines.length && /^\s*>/.test(lines[i])) q.push(lines[i++].replace(/^\s*>\s?/, ""));
+    const quote = q.join(" ").replace(/\s+/g, " ").trim();
+    if (quote) { card.quote = md.parseInline(quote); card.aside = "quote"; }
+  }
 
   card.body = md.parse(lines.slice(i).join("\n").trim());
 
@@ -99,8 +113,10 @@ rmSync(OUT, { recursive: true, force: true });
 mkdirSync(join(OUT, "vendor"), { recursive: true });
 writeFileSync(join(OUT, "index.html"), html);
 cpSync("src/_headers", join(OUT, "_headers"));
+// content assets (images etc.) keep their paths relative to content/
+cpSync(CONTENT, OUT, { recursive: true, filter: f => extname(f).toLowerCase() !== ".md" });
 cpSync(join(pkgDir("vue"), "dist/vue.global.prod.js"), join(OUT, "vendor/vue.global.prod.js"));
 cpSync(join(pkgDir("katex"), "dist/katex.min.css"), join(OUT, "vendor/katex/katex.min.css"));
 cpSync(join(pkgDir("katex"), "dist/fonts"), join(OUT, "vendor/katex/fonts"), { recursive: true });
 
-console.log(`built ${OUT}/index.html — ${site.cards.length} cards (${site.cards.filter(c => c.quote).length} with quotes)`);
+console.log(`built ${OUT}/index.html — ${site.cards.length} cards (${site.cards.filter(c => c.quote).length} quotes, ${site.cards.filter(c => c.image).length} images)`);

@@ -82,6 +82,7 @@
   .card-body ul { @apply list-disc pl-6 space-y-1; }
   .card-body ol { @apply list-decimal pl-6 space-y-1; }
   .card-body blockquote { @apply border-l-2 border-amber/60 pl-4 italic text-white/80; }
+  .card-body img { @apply block w-full h-auto rounded-xl ring-1 ring-white/10; }
   .card-body .katex-display { @apply my-6 py-1 overflow-x-auto overflow-y-hidden text-white; }
 
   /* Math in the byline renders as a chip */

@@ -72,10 +72,10 @@
     <main class="relative">
       <section v-for="(c, i) in cards" :key="c.id" :id="c.id" data-section
                class="min-h-[100svh] flex flex-col xl:flex-row items-center gap-12 xl:gap-8 px-4 sm:px-8 py-24 xl:py-0 [perspective:1400px]"
-               :class="c.quote ? 'justify-center xl:justify-between' : (i % 2 ? 'justify-end' : 'justify-start')">
+               :class="c.aside ? 'justify-center xl:justify-between' : (i % 2 ? 'justify-end' : 'justify-start')">
         <article :ref="el => cardEls[i] = el"
                  class="reveal glass w-full rounded-[2rem] p-8 sm:p-12 shadow-[0_30px_120px_-20px_rgba(139,44,245,.45)] md:mx-[6vw]"
-                 :class="[{ 'is-in': revealed[i] }, c.quote ? 'max-w-xl' : 'max-w-2xl']"
+                 :class="[{ 'is-in': revealed[i] }, c.aside ? 'max-w-xl' : 'max-w-2xl']"
                  @mousemove="tilt($event, i)" @mouseleave="tilts[i] = ''"
                  :style="{ transform: revealed[i] ? tilts[i] : undefined }">
           <div class="flex items-baseline justify-between mb-8">
@@ -98,6 +98,18 @@
           <span aria-hidden="true" class="block font-quote text-[1.6em] leading-[.5] text-white/30 mb-2">&ldquo;</span>
           <span v-html="c.quote"></span>
         </blockquote>
+        <figure v-else-if="c.image"
+           class="reveal relative flex-1 w-full max-w-2xl xl:ml-[2vw] xl:mr-[4vw] sm:pr-10"
+           :class="[{ 'is-in': revealed[i] }, i % 2 ? 'xl:order-first' : '']"
+           style="transition-delay:.3s">
+          <div class="glass rounded-[2rem] p-2 shadow-[0_30px_120px_-20px_rgba(255,122,24,.35)]">
+            <img :src="c.image.src" :alt="c.image.alt" loading="lazy" decoding="async"
+                 class="block w-full h-auto max-h-[75svh] object-contain rounded-[1.6rem]" />
+          </div>
+          <figcaption v-if="c.image.caption" v-html="c.image.caption"
+                      class="mt-4 px-2 font-quote italic text-lg sm:text-xl text-white/60"
+                      :class="i % 2 ? 'xl:text-left' : 'xl:text-right'"></figcaption>
+        </figure>
       </section>
     </main>
 

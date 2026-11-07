@@ -25,12 +25,15 @@ tags: offense, verification  ← optional
 
 > Optional pull-quote shown beside the card
 
+(or, instead of the quote, an image beside the card:)
+![Alt text](images/diagram.svg "Optional caption")
+
 Card body — any Markdown. Inline math $P \neq NP$, display math:
 
 $$ \exists w : V(x, w) = 1 $$
 ```
 
-Meta lines must come directly after the heading; the pull-quote must be the first thing after them. Both are optional.
+Meta lines must come directly after the heading. The aside — a `>` pull-quote **or** an `![alt](src "caption")` line — must be the first thing after them; all are optional. Image paths are relative to `content/` (put files in `content/images/`); everything in `content/` except `.md` is copied into `dist/`. A missing local image is a build warning, not an error. Images elsewhere in the body render inline in the card.
 
 ### Commands
 

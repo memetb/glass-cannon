@@ -12,7 +12,9 @@ repo: https://github.com/memetb/glass-cannon
 Card format
   ## Title                  starts a card
   kicker: / tags:           optional, directly under the heading
-  > quote                   optional; a leading blockquote becomes the right-hand pull-quote
+  > quote                   optional aside: a leading blockquote becomes the pull-quote...
+  ![alt](images/x.png "caption")   ...or a leading image line shows an image instead (caption optional)
+                            image paths are relative to content/; put files in content/images/
   everything else           card body (Markdown; $inline$ and $$display$$ math via KaTeX)
 -->
 
@@ -27,6 +29,8 @@ generation and verification: assuming that code generation is a walk over a stat
 ## Dolor sit exploitum
 kicker: Observation
 tags: search, witness
+
+![A search tree with one highlighted leaf being verified](images/state-space.svg "Generation walks the tree; verification touches one leaf.")
 
 Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent.
 
